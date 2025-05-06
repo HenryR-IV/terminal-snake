@@ -11,19 +11,14 @@ r - Restart
 ```
 
 ### Installation
+
 1. First Clone or download this repository
 
 1. Compile
-```
-make install
-```
-Installs by default to ~/.local/bin and ~/.snake/highscore.txt.
-This can be changed in the makefile, or be done manually by running:
-```
-make
-```
-This will only generate the executable in the ./bin directory. Highscore file will be generate in whatever directory you run it from.
-```
-make uninstall
-```
-This will remove the executable from .local/bin and delete .snake directory.
+
+`make install` Compiles and installs by default to ~/.local/bin and ~/.snake/highscore.txt.
+This can be changed in the makefile, or be done manually by just running `make`.
+This will only generate the executable in the ./bin directory.
+Highscore file will be generated in whatever directory you are in when you run the game.
+
+`make uninstall` This will remove the executable from .local/bin and delete .snake directory.
