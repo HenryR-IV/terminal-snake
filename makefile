@@ -6,12 +6,12 @@ SRCS:=$(wildcard src/*.cpp)
 OBJS=$(patsubst src/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 FLAGS=-I include/
 
+all: $(BIN_DIR)/snake
+
 install: FLAGS += -D INSTALL
 
 install: all .snake
 	cp $(BIN_DIR)/snake $(HOME)/.local/bin/
-
-all: $(BIN_DIR)/snake
 
 uninstall:
 	rm $(HOME)/.local/bin/snake

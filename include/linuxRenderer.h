@@ -17,7 +17,7 @@ class Renderer
 		void writeString(std::string s, Position pos);
 		void drawBorder();
 		void getInput();
-		bool exit, restart;
+		bool exit, restart, pause;
 
 	public:
 		Renderer();

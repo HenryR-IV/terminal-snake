@@ -18,7 +18,7 @@ Renderer::Renderer()
 	// clear screen and hide cursor
 	write(1, "\x1b[2J\x1b[?25l", 10);
 
-	exit = restart = false;
+	exit = restart = pause = false;
 }
 
 Renderer::~Renderer()
@@ -126,6 +126,9 @@ void Renderer::getInput()
 		case 'r':
 			restart = true;
 			break;
+		case 'p':
+			pause = !pause;
+			break;
 	};
 }
 
@@ -135,7 +138,8 @@ void Renderer::run()
 	{
 		drawGame();
 		getInput();
-		game.update();
+		if(!pause)
+			game.update();
 		if(restart)
 		{
 			game.reset();
