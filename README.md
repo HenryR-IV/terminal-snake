@@ -2,6 +2,14 @@
 Snake - the game, written in C++ for Linux only using glibc and the C++ stl
 ![snake demo image](img/snake.png)
 
+### Controls
+```
+w, a, s, d - Change Directions
+p - Pause
+q - Quit
+r - Restart
+```
+
 ### Installation
 1. First Clone or download this repository
 
