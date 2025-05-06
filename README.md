@@ -1,6 +1,6 @@
 # terminal-snake
 Snake - the game, written in C++ for Linux only using glibc and the C++ stl
-![snake demo](demo/snake.mp4)
+<video src="demo/snake.mp4"></video>
 
 ### Installation
 1. First Clone or download this repository
