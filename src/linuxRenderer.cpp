@@ -31,7 +31,7 @@ Renderer::~Renderer()
 
 void Renderer::putChar(const char c, Position pos)
 {
-	// add 1 to both positions since terminal characters are 1 indexed
+	// add to both positions since terminal position indexing starts at 1, and the border offset
 	std::string f = "\x1b[" + std::to_string(pos.y+2) + ";" + std::to_string(pos.x+2) + "f" + c;
 	write(1, f.c_str(), f.size());
 }
