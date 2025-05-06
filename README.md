@@ -17,8 +17,8 @@ r - Restart
 1. Compile
 
 `make install` Compiles and installs by default to ~/.local/bin and ~/.snake/highscore.txt.
-This can be changed in the makefile, or be done manually by just running `make`.
-This will only generate the executable in the ./bin directory.
-Highscore file will be generated in whatever directory you are in when you run the game.
+This can be changed in the makefile, or be done manually by just running `make` 
+which will only generate the executable in the ./bin directory.
+In this case highscore.txt file will be generated in whatever directory you are in when you run the game.
 
 `make uninstall` This will remove the executable from .local/bin and delete .snake directory.
