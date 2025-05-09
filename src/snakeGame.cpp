@@ -80,10 +80,10 @@ void SnakeGame::newFruitPos()
 	while(!fruitPosValid());
 }
 
-bool SnakeGame::checkGameOver()
+void SnakeGame::checkGameOver()
 {
 	if(gameOver)
-		return true;
+		return;
 
 	switch(snakeDirection)
 	{
@@ -93,33 +93,37 @@ bool SnakeGame::checkGameOver()
 			if(snake.front().y == 0)
 			{
 				setIfHighscore();
-				return true;
+				gameOver = true;
+				return;
 			}
 			break;
 		case RIGHT:
 			if(snake.front().x == gameSize.x-1)
 			{
 				setIfHighscore();
-				return true;
+				gameOver = true;
+				return;
 			}
 			break;
 		case DOWN:
 			if(snake.front().y == gameSize.y-1)
 			{
 				setIfHighscore();
-				return true;
+				gameOver = true;
+				return;
 			}
 			break;
 		case LEFT:
 			if(snake.front().x == 0)
 			{
 				setIfHighscore();
-				return true;
+				gameOver = true;
+				return;
 			}
 			break;
 	};
 
-	return false;
+	gameOver = false;
 }
 
 void SnakeGame::moveSnake()
@@ -145,9 +149,27 @@ void SnakeGame::moveSnake()
 
 void SnakeGame::checkSelfCollision()
 {
+	Position newPos;
+	switch(snakeDirection)
+	{
+		case STOPPED:
+			break;
+		case UP:
+			newPos = {snake.front().x, snake.front().y-1};
+			break;
+		case RIGHT:
+			newPos = {snake.front().x+1, snake.front().y};
+			break;
+		case DOWN:
+			newPos = {snake.front().x, snake.front().y+1};
+			break;
+		case LEFT:
+			newPos = {snake.front().x-1, snake.front().y};
+			break;
+	};
 	for(int i = 1; i < snake.size(); i++)
 	{
-		if(snake.front().x == snake[i].x && snake.front().y == snake[i].y)
+		if(newPos.x == snake[i].x && newPos.y == snake[i].y)
 		{
 			gameOver = true;
 			setIfHighscore();
@@ -159,7 +181,8 @@ void SnakeGame::checkSelfCollision()
 void SnakeGame::update()
 {
 	// check if direction will cause game over
-	gameOver = checkGameOver();
+	checkGameOver();
+	checkSelfCollision();
 	if(gameOver || snakeDirection == STOPPED)
 	{
 		snakeDirection = STOPPED;
@@ -171,7 +194,6 @@ void SnakeGame::update()
 		snake.pop_back();
 	else
 		newFruitPos();
-	checkSelfCollision();
 }
 
 void SnakeGame::reset()

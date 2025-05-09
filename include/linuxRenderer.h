@@ -19,7 +19,18 @@ class Renderer
 		bool exit, restart, pause;
 		void init_term();
 		void restore_term();
-		void drawSnake();
+		void initGame();
+		struct 
+		{
+			Position tail;
+			Position head;
+			Position fruit;
+			int score;
+			bool gameOver;
+		} prevGamestate;
+		void setPrevGamestate();
+		void updateScoreDisplay();
+		void updateHighscoreDisplay();
 
 	public:
 		Renderer();

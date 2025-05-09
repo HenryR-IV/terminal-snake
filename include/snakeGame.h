@@ -23,9 +23,9 @@ class SnakeGame
 	private:
 		void newFruitPos();
 		bool fruitPosValid();
-		bool checkGameOver();
-		void moveSnake();
+		void checkGameOver();
 		void checkSelfCollision();
+		void moveSnake();
 		void storeHighscore();
 		void getHighscore();
 

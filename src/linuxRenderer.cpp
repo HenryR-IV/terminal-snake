@@ -1,5 +1,15 @@
 #include "linuxRenderer.h"
 
+
+void Renderer::setPrevGamestate()
+{
+	prevGamestate.tail = game.snake.back();
+	prevGamestate.head = game.snake[0];
+	prevGamestate.fruit = game.fruit;
+	prevGamestate.score = game.snake.size();
+	prevGamestate.gameOver = game.gameOver;
+}
+
 void Renderer::init_term()
 {
 	// save old terminal settings
@@ -66,55 +76,64 @@ void Renderer::drawBorder()
 		writeString("|", {game.gameSize.x+1, i});
 	}
 
+	// score
+	writeString("Score: " + std::to_string(game.snake.size()), {0, game.gameSize.y+2});
+	
+	// highscore
+	writeString("Highscore: " + std::to_string(game.highscore), {game.gameSize.x+3, 0});
+
+	//fruit
+	writeString("\u001b[36m*\u001b[37m", {game.fruit.x+1, game.fruit.y+1});
 }
 
-void Renderer::drawSnake()
+void Renderer::updateScoreDisplay()
 {
-	// +1 offset for border
+	writeString("\u001b[0K", {7 , game.gameSize.y+2});
+	writeString(std::to_string(game.snake.size()), {7 , game.gameSize.y+2});
+}
 
-	// set color
-	writeString("\u001b[34m", {0, 0});
-	// draw body
-	for(int i = 1; i < game.snake.size(); i++)
-	{
-		writeString("o", {game.snake[i].x+1, game.snake[i].y+1});
-	}
-
-	// draw head and unset color
-	if(!game.gameOver)
-		writeString("0\u001b[37m", {game.snake[0].x+1, game.snake[0].y+1});
-	if(game.gameOver)
-		writeString("X\u001b[37m", {game.snake[0].x+1, game.snake[0].y+1});
+void Renderer::updateHighscoreDisplay()
+{
+	writeString("\u001b[0K", {game.gameSize.x+14, 0});
+	writeString(std::to_string(game.highscore), {game.gameSize.x+14, 0});
 }
 
 void Renderer::drawGame()
 {
-	// clear screen
-	write(1, "\x1b[2J", 4);
-
-	drawBorder();
-
-	drawSnake();
-
-	// draw fruit, set & unset color
-	writeString("\u001b[36m*\u001b[37m", {game.fruit.x+1, game.fruit.y+1});
-	
-	// score display
-	writeString("Score: " + std::to_string(game.snake.size()), {0, game.gameSize.y+2});
-	
-	// highscore display
-	if(game.highscore == -1)
-		writeString("Highscore: NONE", {game.gameSize.x+3, 0});
-	else
-		writeString("Highscore: " + std::to_string(game.highscore), {game.gameSize.x+3, 0});
-
-	// game over
-	if(game.gameOver)
+	if(game.gameOver && game.gameOver != prevGamestate.gameOver)
 	{
+		// replace head with dead
+ 		writeString("X", {game.snake[0].x+1, game.snake[0].y+1});
+
+		// game over display
 		writeString("Game Over!", {game.gameSize.x/2-5, game.gameSize.y/2});
 		writeString("Score: " + std::to_string(game.snake.size()), {game.gameSize.x/2-5, game.gameSize.y/2+1});
 		writeString("Press q to quit", {game.gameSize.x/2-8, game.gameSize.y/2+2});
 		writeString("Press r to restart", {game.gameSize.x/2-8, game.gameSize.y/2+3});
+
+		updateHighscoreDisplay();
+	}
+	else if(!game.gameOver && game.snake.size() == prevGamestate.score)
+	{
+		// replace previous head
+		writeString("o", {prevGamestate.head.x+1, prevGamestate.head.y+1});
+		// remove tail
+ 		writeString(" ", {prevGamestate.tail.x+1, prevGamestate.tail.y+1});
+		// draw new head
+ 		writeString("0", {game.snake[0].x+1, game.snake[0].y+1});
+	}
+	else if(!game.gameOver && game.snake.size() != prevGamestate.score)
+	{
+		// redraw fruit
+		writeString("\u001b[36m*\u001b[37m", {game.fruit.x+1, game.fruit.y+1});
+		writeString(" ", {prevGamestate.fruit.x+1, prevGamestate.fruit.y+1});
+
+		// replace previous head
+		writeString("o", {prevGamestate.head.x+1, prevGamestate.head.y+1});
+		// draw new head
+ 		writeString("0", {game.snake[0].x+1, game.snake[0].y+1});
+
+		updateScoreDisplay();
 	}
 }
 
@@ -152,19 +171,30 @@ void Renderer::getInput()
 	};
 }
 
+void Renderer::initGame()
+{
+	game.reset();
+	// clear screen
+	write(1, "\x1b[2J", 4);
+
+	// includes initial score and highscore
+	drawBorder();
+	restart = false;
+	setPrevGamestate();
+}
+
 void Renderer::run()
 {
+	initGame();
 	do
 	{
-		drawGame();
+		setPrevGamestate();
 		getInput();
 		if(!pause)
 			game.update();
 		if(restart)
-		{
-			game.reset();
-			restart = false;
-		}
+			initGame();
+		drawGame();
 		usleep(100000);
 	}
 	while(!exit);
