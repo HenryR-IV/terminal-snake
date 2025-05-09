@@ -1,32 +1,48 @@
 #include "linuxRenderer.h"
 
-Renderer::Renderer()
+void Renderer::init_term()
 {
-	game = SnakeGame({WIDTH, HEIGHT});
+	// save old terminal settings
 	tcgetattr(0,&oldTerm);
+	// get old terminal settings to update
 	tcgetattr(0,&term);
 
 	// turn off echo and read by byte instead of line
 	term.c_lflag &= ~(ECHO | ICANON);
+
 	// set minimum characters to read to 0
 	term.c_cc[VMIN] = 0;
+
 	// set read timeout, 0 for asynchronous
 	term.c_cc[VTIME] = 0;
 
+	// apply updated settings
 	tcsetattr(0, TCSAFLUSH, &term);
 
 	// clear screen and hide cursor
 	write(1, "\x1b[2J\x1b[?25l", 10);
+}
+
+void Renderer::restore_term()
+{
+	// reset terminal attributes
+	tcsetattr(0, TCSAFLUSH, &oldTerm);
+	// unhide cursor, clear screen
+	write(1, "\x1b[?25h\x1b[2J\x1b[H", 13);
+}
+
+Renderer::Renderer()
+{
+	game = SnakeGame({WIDTH, HEIGHT});
+
+	init_term();
 
 	exit = restart = pause = false;
 }
 
 Renderer::~Renderer()
 {
-	// reset terminal attributes
-	tcsetattr(0, TCSAFLUSH, &oldTerm);
-	// unhide cursor, clear screen
-	write(1, "\x1b[?25h\x1b[2J\x1b[H", 13);
+	restore_term();
 }
 
 void Renderer::putChar(const char c, Position pos)

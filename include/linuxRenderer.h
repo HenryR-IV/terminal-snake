@@ -18,6 +18,8 @@ class Renderer
 		void drawBorder();
 		void getInput();
 		bool exit, restart, pause;
+		void init_term();
+		void restore_term();
 
 	public:
 		Renderer();
