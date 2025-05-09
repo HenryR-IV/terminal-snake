@@ -103,7 +103,7 @@ void Renderer::drawGame()
 	if(game.gameOver && game.gameOver != prevGamestate.gameOver)
 	{
 		// replace head with dead
- 		writeString("X", {game.snake[0].x+1, game.snake[0].y+1});
+ 		writeString("\u001b[34mX\u001b[37m", {game.snake[0].x+1, game.snake[0].y+1});
 
 		// game over display
 		writeString("Game Over!", {game.gameSize.x/2-5, game.gameSize.y/2});
@@ -116,11 +116,11 @@ void Renderer::drawGame()
 	else if(!game.gameOver && game.snake.size() == prevGamestate.score)
 	{
 		// replace previous head
-		writeString("o", {prevGamestate.head.x+1, prevGamestate.head.y+1});
+		writeString("\u001b[34mo", {prevGamestate.head.x+1, prevGamestate.head.y+1});
 		// remove tail
  		writeString(" ", {prevGamestate.tail.x+1, prevGamestate.tail.y+1});
 		// draw new head
- 		writeString("0", {game.snake[0].x+1, game.snake[0].y+1});
+ 		writeString("0\u001b[37m", {game.snake[0].x+1, game.snake[0].y+1});
 	}
 	else if(!game.gameOver && game.snake.size() != prevGamestate.score)
 	{
@@ -129,9 +129,9 @@ void Renderer::drawGame()
 		writeString(" ", {prevGamestate.fruit.x+1, prevGamestate.fruit.y+1});
 
 		// replace previous head
-		writeString("o", {prevGamestate.head.x+1, prevGamestate.head.y+1});
+		writeString("\u001b[34mo", {prevGamestate.head.x+1, prevGamestate.head.y+1});
 		// draw new head
- 		writeString("0", {game.snake[0].x+1, game.snake[0].y+1});
+ 		writeString("0\u001b[37m", {game.snake[0].x+1, game.snake[0].y+1});
 
 		updateScoreDisplay();
 	}
