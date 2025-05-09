@@ -45,32 +45,46 @@ Renderer::~Renderer()
 	restore_term();
 }
 
-void Renderer::putChar(const char c, Position pos)
-{
-	// add to both positions since terminal position indexing starts at 1, and the border offset
-	std::string f = "\x1b[" + std::to_string(pos.y+2) + ";" + std::to_string(pos.x+2) + "f" + c;
-	write(1, f.c_str(), f.size());
-}
-
 void Renderer::writeString(std::string s, Position pos)
 {
-	std::string f = "\x1b[" + std::to_string(pos.y+2) + ";" + std::to_string(pos.x+2) + "f" + s;
+	// add 1 to position since terminal is 1 indexed
+	std::string f = "\x1b[" + std::to_string(pos.y+1) + ";" + std::to_string(pos.x+1) + "f" + s;
 	write(1, f.c_str(), f.size());
 }
 
 void Renderer::drawBorder()
 {
 	std::string s(game.gameSize.x, '-'); 
-	std::string f = "\x1b[Ho" + s + "o";
-	write(1, f.c_str(), f.size());
-	f = "\x1b[" + std::to_string(game.gameSize.y+2) + ";0fo" + s + "o";
-	write(1, f.c_str(), f.size());
-	for(int i = 2; i <= game.gameSize.y+1; i++)
+	s = 'o' + s + 'o';
+	writeString(s, {0,0}); // top
+	writeString(s, {0,game.gameSize.y+1}); // bottom
+
+	// sides
+	for(int i = 1; i <= game.gameSize.y; i++)
 	{
-		f = "\x1b[" + std::to_string(i) + ";1f|\x1b[" + std::to_string(i) + ";" + std::to_string(game.gameSize.x+2) + "f|";  
-		write(1, f.c_str(), f.size());
+		writeString("|", {0, i});
+		writeString("|", {game.gameSize.x+1, i});
 	}
 
+}
+
+void Renderer::drawSnake()
+{
+	// +1 offset for border
+
+	// set color
+	writeString("\u001b[34m", {0, 0});
+	// draw body
+	for(int i = 1; i < game.snake.size(); i++)
+	{
+		writeString("o", {game.snake[i].x+1, game.snake[i].y+1});
+	}
+
+	// draw head and unset color
+	if(!game.gameOver)
+		writeString("0\u001b[37m", {game.snake[0].x+1, game.snake[0].y+1});
+	if(game.gameOver)
+		writeString("X\u001b[37m", {game.snake[0].x+1, game.snake[0].y+1});
 }
 
 void Renderer::drawGame()
@@ -78,31 +92,21 @@ void Renderer::drawGame()
 	// clear screen
 	write(1, "\x1b[2J", 4);
 
-	// draw border
 	drawBorder();
 
-	// draw snake
-	writeString("\u001b[34m", game.snake[0]);
-	for(int i = 1; i < game.snake.size(); i++)
-	{
-		putChar('o', game.snake[i]);
-	}
-	if(!game.gameOver)
-		writeString("0\u001b[37m", game.snake[0]);
-	if(game.gameOver)
-		writeString("X\u001b[37m", game.snake[0]);
+	drawSnake();
 
-	// draw fruit
-	writeString("\u001b[36m*\u001b[37m", game.fruit);
+	// draw fruit, set & unset color
+	writeString("\u001b[36m*\u001b[37m", {game.fruit.x+1, game.fruit.y+1});
 	
-	// draw position
-	writeString("Score: " + std::to_string(game.snake.size()), {0, game.gameSize.y+1});
+	// score display
+	writeString("Score: " + std::to_string(game.snake.size()), {0, game.gameSize.y+2});
 	
 	// highscore display
 	if(game.highscore == -1)
-		writeString("Highscore: NONE", {game.gameSize.x+2, 0});
+		writeString("Highscore: NONE", {game.gameSize.x+3, 0});
 	else
-		writeString("Highscore: " + std::to_string(game.highscore), {game.gameSize.x+2, 0});
+		writeString("Highscore: " + std::to_string(game.highscore), {game.gameSize.x+3, 0});
 
 	// game over
 	if(game.gameOver)

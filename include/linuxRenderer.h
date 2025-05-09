@@ -12,7 +12,6 @@ class Renderer
 	private:
 		termios oldTerm, term;
 		SnakeGame game;
-		void putChar(const char c, Position pos);
 		void drawGame();
 		void writeString(std::string s, Position pos);
 		void drawBorder();
@@ -20,6 +19,7 @@ class Renderer
 		bool exit, restart, pause;
 		void init_term();
 		void restore_term();
+		void drawSnake();
 
 	public:
 		Renderer();
